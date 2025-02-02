@@ -1,0 +1,100 @@
+fn main() { println!("Hello, world!"); }
+let x = 10;
+const Y: i32 = 20;
+let mut z = 30;
+fn add(a: i32, b: i32) -> i32 { a + b }
+let result = add(5, 10);
+if x > 5 { println!("x is greater than 5"); }
+for i in 0..10 { println!("{}", i); }
+while x > 0 { x -= 1; }
+struct Person { name: String, age: u8 }
+let person = Person { name: String::from("Alice"), age: 30 };
+impl Person { fn greet(&self) { println!("Hello, {}!", self.name); } }
+match x { 10 => println!("x is ten"), _ => println!("x is something else") }
+let numbers = vec![1, 2, 3];
+for num in &numbers { println!("{}", num); }
+let doubled: Vec<i32> = numbers.iter().map(|x| x * 2).collect();
+let sum: i32 = numbers.iter().sum();
+use std::fs; let contents = fs::read_to_string("file.txt").expect("Failed to read");
+use std::thread; thread::spawn(|| println!("Hello from another thread"));
+cargo new my_project
+cargo build
+cargo run
+cargo test
+cargo fmt
+cargo check
+rustc main.rs
+rustup update
+cargo clippy
+cargo install some_crate
+cargo bench
+cargo doc --open
+cargo add serde
+cargo remove serde
+cargo tree
+tokio::spawn(async { println!("Async task"); });
+async fn async_function() { println!("Async function"); }
+let future = async_function(); tokio::runtime::Runtime::new().unwrap().block_on(future);
+fn main() { println!("Hello, world!"); }
+let x = 10;
+const Y: i32 = 20;
+let mut z = 30;
+fn add(a: i32, b: i32) -> i32 { a + b }
+let result = add(5, 10);
+if x > 5 { println!("x is greater than 5"); }
+for i in 0..10 { println!("{}", i); }
+while x > 0 { x -= 1; }
+struct Person { name: String, age: u8 }
+let person = Person { name: String::from("Alice"), age: 30 };
+impl Person { fn greet(&self) { println!("Hello, {}!", self.name); } }
+match x { 10 => println!("x is ten"), _ => println!("x is something else") }
+let numbers = vec![1, 2, 3];
+for num in &numbers { println!("{}", num); }
+let doubled: Vec<i32> = numbers.iter().map(|x| x * 2).collect();
+let sum: i32 = numbers.iter().sum();
+use std::fs; let contents = fs::read_to_string("file.txt").expect("Failed to read");
+use std::thread; thread::spawn(|| println!("Hello from another thread"));
+cargo new my_project
+cargo build
+cargo run
+cargo test
+cargo fmt
+cargo check
+rustc main.rs
+rustup update
+cargo clippy
+cargo install some_crate
+cargo bench
+cargo doc --open
+cargo add serde
+cargo remove serde
+cargo tree
+tokio::spawn(async { println!("Async task"); });
+async fn async_function() { println!("Async function"); }
+let future = async_function(); tokio::runtime::Runtime::new().unwrap().block_on(future);
+fn main() { println!("Hello, world!"); }
+let x = 10;
+const Y: i32 = 20;
+let mut z = 30;
+fn add(a: i32, b: i32) -> i32 { a + b }
+let result = add(5, 10);
+if x > 5 { println!("x is greater than 5"); }
+for i in 0..10 { println!("{}", i); }
+while x > 0 { x -= 1; }
+struct Person { name: String, age: u8 }
+let person = Person { name: String::from("Alice"), age: 30 };
+impl Person { fn greet(&self) { println!("Hello, {}!", self.name); } }
+match x { 10 => println!("x is ten"), _ => println!("x is something else") }
+let numbers = vec![1, 2, 3];
+for num in &numbers { println!("{}", num); }
+let doubled: Vec<i32> = numbers.iter().map(|x| x * 2).collect();
+let sum: i32 = numbers.iter().sum();
+use std::fs; let contents = fs::read_to_string("file.txt").expect("Failed to read");
+use std::thread; thread::spawn(|| println!("Hello from another thread"));
+cargo new my_project
+cargo build
+cargo run
+cargo test
+cargo fmt
+cargo check
+rustc main.rs
