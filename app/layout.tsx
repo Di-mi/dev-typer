@@ -17,8 +17,9 @@ export default function RootLayout({
     <html suppressHydrationWarning lang="en">
       <body>
         <div className="min-h-screen bg-black text-green-500 font-mono flex flex-col">
-          <main className="flex-grow">
+
             <Header />
+          <main className="flex-grow">
             {children}
           </ main>
           <Sidebar />

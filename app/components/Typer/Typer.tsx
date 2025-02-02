@@ -89,7 +89,7 @@ export default function Typer() {
 
   return (
 
-    <div className="flex-grow flex items-center justify-center p-4">
+    <div className="flex-grow flex items-center justify-center p-4 my-auto">
       {/* Scanline effect */}
       <div className="absolute inset-0 pointer-events-none bg-scanline z-10"></div>
 
