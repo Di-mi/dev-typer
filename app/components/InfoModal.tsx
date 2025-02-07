@@ -4,19 +4,21 @@ import { X } from 'lucide-react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-const INFO_TEXT = `Teest your typing speed and accuracy but with most commonly used develeper commands and characters.`
+const INFO_TEXT = `Test your typing speed and accuracy but with most commonly used develeper commands and characters.`
 
 
 function TypingEffect({ text }: { text: string }) {
-  const [displayText, setDisplayText] = useState('')
-  const index = useRef(0)
+  const [displayText, setDisplayText] = useState({ index: 0, value: '' })
 
   useEffect(() => {
     const typingInterval = setInterval(() => {
-      if (index.current < text.length - 1) {
-        console.log('index', index.current, text[index.current])
-        setDisplayText((prev) => prev + text[index.current])
-        index.current += 1
+      if (displayText.index < text.length) {
+        setDisplayText((prev) => {
+          return {
+            index: prev.index + 1,
+            value: prev.value + text[prev.index]
+         }
+        });
       } else {
         clearInterval(typingInterval)
       }
@@ -27,7 +29,7 @@ function TypingEffect({ text }: { text: string }) {
 
    return (
     <div className="font-mono text-green-500">
-      {displayText}
+      {displayText.value}
       <span className="inline-block animate-blink">▌</span>
 
     </div>

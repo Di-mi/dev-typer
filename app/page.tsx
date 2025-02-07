@@ -8,7 +8,7 @@ export default async function App() {
   return (
     <div>
       <Typer  />
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense>
         <InfoModal/>
       </Suspense>
     </div>

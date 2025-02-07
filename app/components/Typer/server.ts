@@ -7,11 +7,11 @@ import fs from 'fs';
 
 async function retrieveTextFromDb(language: SUPPORTED_LANGUAGES) {
   const db = {
-    JavaScript: 'app/typescript.txt',
-    Python: 'app/python.txt',
-    Rust: 'app/rust.txt'
+    JavaScript: './typescript.txt',
+    Python: './python.txt',
+    Rust: './rust.txt'
   }
-  const file = await fs.promises.readFile(path.join(process.cwd(), db[language]), 'utf8');
+  const file = await fs.promises.readFile(db[language], 'utf8');
   const textList = file.split('\n');
   const textSample = []
   for (let i = 0; i < 5; i++) {

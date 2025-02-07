@@ -17,7 +17,6 @@ export default function RootLayout({
     <html suppressHydrationWarning lang="en">
       <body>
         <div className="min-h-screen bg-black text-green-500 font-mono flex flex-col">
-
             <Header />
           <main className="flex-grow">
             {children}
@@ -25,7 +24,7 @@ export default function RootLayout({
           <Sidebar />
           <footer className="w-full border-t-2 border-green-500 p-4 text-center">
             <div className="flex justify-center items-center space-x-4">
-              <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-green-400 transition-colors duration-200">
+              <a href="https://github.com/Di-mi/dev-typer" target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-green-400 transition-colors duration-200">
                 <Github size={20} className="mr-2" />
                 View on GitHub
               </a>
