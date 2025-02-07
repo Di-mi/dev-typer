@@ -6,6 +6,8 @@ import { Github } from 'lucide-react';
 export const metadata = {
   title: 'Dev Typer',
   description: 'Test you typing speed and accuracy but with most commonly used develeper commands and characters.',
+  icons: '/favicon.ico',
+  keywords: ['typing', 'speed', 'test', 'developer', 'commands', 'characters'],
 };
 
 export default function RootLayout({
