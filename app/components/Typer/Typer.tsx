@@ -23,6 +23,7 @@ export default function Typer() {
     async function fetchText() {
       const text = await getText(selectedLanguage)
       setText(text)
+      setTypedText('')
     }
     fetchText()
   }, [selectedLanguage]);
