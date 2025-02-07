@@ -1,5 +1,4 @@
 "use server"
-import path from "path";
 import { SUPPORTED_LANGUAGES } from "../common/types";
 import fs from 'fs';
 
@@ -7,11 +6,11 @@ import fs from 'fs';
 
 async function retrieveTextFromDb(language: SUPPORTED_LANGUAGES) {
   const db = {
-    JavaScript: './typescript.txt',
-    Python: './python.txt',
-    Rust: './rust.txt'
+    JavaScript: 'https://7wdqxxyilxdytklh.public.blob.vercel-storage.com/data/typescript-KKDE6rGkQ28yKVtQ1DXHUxNa04AfZK.txt',
+    Python: 'https://7wdqxxyilxdytklh.public.blob.vercel-storage.com/data/python-46Hk3ESFtISTrzb4GLDtX1xUcFHq5X.txt',
+    Rust: 'https://7wdqxxyilxdytklh.public.blob.vercel-storage.com/data/rust-3EUpubpEV8sGn1CKD6i7XRshDUzKvx.txt'
   }
-  const file = await fs.promises.readFile(db[language], 'utf8');
+  const file = await fetch(db[language]).then(res => res.text());
   const textList = file.split('\n');
   const textSample = []
   for (let i = 0; i < 5; i++) {
