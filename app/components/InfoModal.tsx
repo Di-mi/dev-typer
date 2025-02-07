@@ -12,18 +12,17 @@ function TypingEffect({ text }: { text: string }) {
 
   useEffect(() => {
     const typingInterval = setInterval(() => {
-      if (displayText.index < text.length) {
         setDisplayText((prev) => {
+          if (prev.index === text.length - 1){
+            clearInterval(typingInterval);
+          } 
           return {
             index: prev.index + 1,
             value: prev.value + text[prev.index]
          }
         });
-      } else {
-        clearInterval(typingInterval)
-      }
-    }, 30)
-
+      
+    }, 50)
     return () => clearInterval(typingInterval)
   }, [text])
 

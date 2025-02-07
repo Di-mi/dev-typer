@@ -100,23 +100,30 @@ export default function Typer() {
           tabIndex={0}
           onKeyDown={handleKeyDown}
         >
-          {text.split('').map((char, index) => (
+        {
+          typedText.split('').map((char, index) => { 
+          return (
             <span
               key={index}
               className={
-                typedText[index] === undefined
-                  ? 'opacity-50'
-                  : typedText[index] === char
+                  typedText[index] === text[index]
                     ? 'text-green-500'
                     : 'text-red-500'
-              }
+              }>
+              {char === '\n' ? '↵\n' : char}
+            </span>
+            )})
+          }
+          <span className="animate-pulse">|</span>
+
+          {text.slice(typedText ? typedText.length : 0).split('').map((char, index) => (
+            <span
+              key={index}
+              className={'opacity-50'}
             >
               {char === '\n' ? '↵\n' : char}
             </span>
           ))}
-          {typedText.length === text.length ? null : (
-            <span className="animate-pulse">|</span>
-          )}
         </div>
 
         <div className="flex justify-between items-center">
