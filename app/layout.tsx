@@ -8,6 +8,21 @@ export const metadata = {
   description: 'Test you typing speed and accuracy but with most commonly used develeper commands and characters.',
   icons: '/favicon.ico',
   keywords: ['typing', 'speed', 'test', 'developer', 'commands', 'characters'],
+  openGraph: {
+    type: 'website',
+    locale: 'en_IE',
+    url: 'https://dev-typer.vercel.app/',
+    siteName: 'Dev Typer',
+    images: [
+      {
+        url: '/assets/keyboard.jpg',
+        width: 800,
+        height: 600,
+        alt: 'keyboard',
+      },
+    ],
+  },
+  
 };
 
 export default function RootLayout({
