@@ -103,6 +103,10 @@ export default function Typer() {
         >
         {
           typedText.split('').map((char, index) => { 
+            let charToPrint = char
+            if (typedText[index] != text[index]) {
+              charToPrint = text[index]
+            }
           return (
             <span
               key={index}
@@ -111,11 +115,11 @@ export default function Typer() {
                     ? 'text-green-500'
                     : 'text-red-500'
               }>
-              {char === '\n' ? '↵\n' : char}
+              {charToPrint === '\n' ? '↵\n' : charToPrint}
             </span>
             )})
           }
-          <span className="animate-pulse">|</span>
+          <span className="animate-pulse">⎹</span>
 
           {text.slice(typedText ? typedText.length : 0).split('').map((char, index) => (
             <span
