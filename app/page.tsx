@@ -6,12 +6,14 @@ import { Suspense } from "react";
 
 export default async function App() {
   return (
+    <main className="flex-grow flex flex-col justify-center">
     <div>
       <Typer  />
       <Suspense>
         <InfoModal/>
       </Suspense>
     </div>
+    </main>
   )
 
 }
