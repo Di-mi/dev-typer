@@ -1,6 +1,5 @@
 "use server"
 import { SUPPORTED_LANGUAGES } from "../common/types";
-import fs from 'fs';
 
 
 

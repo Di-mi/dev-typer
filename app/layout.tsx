@@ -35,9 +35,8 @@ export default function RootLayout({
       <body>
         <div className="min-h-screen bg-black text-green-500 font-mono flex flex-col">
             <Header />
-          <main className="flex-grow">
+
             {children}
-          </ main>
           <Sidebar />
           <footer className="w-full border-t-2 border-green-500 p-4 text-center">
             <div className="flex justify-center items-center space-x-4">

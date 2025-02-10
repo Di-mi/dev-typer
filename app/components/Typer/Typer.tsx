@@ -89,7 +89,6 @@ export default function Typer() {
   const wpm = timeElapsed ? Math.round((wordCount / timeElapsed) * 60) : 0
 
   return (
-
     <div className="flex-grow flex items-center justify-center p-4 my-auto">
       {/* Scanline effect */}
       <div className="absolute inset-0 pointer-events-none bg-scanline z-10"></div>
@@ -145,7 +144,7 @@ export default function Typer() {
         <div className="space-y-2">
           <div className="flex justify-between text-lg">
             <span>Progress:</span>
-            <span>{Math.round((typedText.length / text.length) * 100)}%</span>
+            <span>{text.length ? (Math.round(typedText.length / text.length) * 100 ) : 0 }%</span>
           </div>
           <div className="w-full bg-green-900 rounded-full h-6 shadow-inner-retro">
             <div
@@ -167,7 +166,6 @@ export default function Typer() {
         </div>
       </div>
     </div>
-
 
   )
 }
