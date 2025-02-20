@@ -54,7 +54,7 @@ export async function POST(req: Request) {
 
   switch(eventType) {
     case 'user.created':
-      createUser({
+      await createUser({
         fullName: evt.data.first_name + ' ' + evt.data.last_name,
         clerkId: evt.data.id,
         email: evt.data.email_addresses[0].email_address
