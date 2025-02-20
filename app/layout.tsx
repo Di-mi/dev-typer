@@ -2,6 +2,8 @@ import './globals.css'
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import { Github } from 'lucide-react';
+import { ClerkProvider } from '@clerk/nextjs';
+import { PostHogProvider } from './providers';
 
 export const metadata = {
   title: 'Dev Typer',
@@ -22,7 +24,7 @@ export const metadata = {
       },
     ],
   },
-  
+
 };
 
 export default function RootLayout({
@@ -31,25 +33,29 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html suppressHydrationWarning lang="en">
-      <body>
-        <div className="min-h-screen bg-black text-green-500 font-mono flex flex-col">
+    <ClerkProvider>
+      <html suppressHydrationWarning lang="en">
+        <body>
+          <PostHogProvider>
+            <div className="min-h-screen bg-black text-green-500 font-mono flex flex-col">
             <Header />
-
             {children}
-          <Sidebar />
-          <footer className="w-full border-t-2 border-green-500 p-4 text-center">
-            <div className="flex justify-center items-center space-x-4">
-              <a href="https://github.com/Di-mi/dev-typer" target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-green-400 transition-colors duration-200">
-                <Github size={20} className="mr-2" />
-                View on GitHub
-              </a>
-              <span>|</span>
-              <span>© 2025 Retro Speed Typer</span>
-            </div>
-          </footer>
-        </div>
+            <Sidebar />
+            <footer className="w-full border-t-2 border-green-500 p-4 text-center">
+              <div className="flex justify-center items-center space-x-4">
+                <a href="https://github.com/Di-mi/dev-typer" target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-green-400 transition-colors duration-200">
+                  <Github size={20} className="mr-2" />
+                  View on GitHub
+                </a>
+                <span>|</span>
+                <span>© 2025 Retro Speed Typer</span>
+              </div>
+            </footer>
+          </div>
+        </PostHogProvider>
       </body>
     </html >
+
+    </ClerkProvider >
   )
 }

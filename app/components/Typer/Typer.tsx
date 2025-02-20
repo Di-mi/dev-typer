@@ -53,7 +53,6 @@ export default function Typer() {
 
   const handleKeyDown = (e) => {
     if (!isActive) return
-
     if (e.key === 'Backspace') {
       setTypedText(prev => prev.slice(0, -1))
       return
@@ -99,6 +98,7 @@ export default function Typer() {
           className="p-4 border-2 border-green-500 rounded-md bg-black/50 shadow-inner-retro focus:outline-none whitespace-pre-wrap text-lg"
           tabIndex={0}
           onKeyDown={handleKeyDown}
+          onFocus={handleStart}
         >
         {
           typedText.split('').map((char, index) => { 

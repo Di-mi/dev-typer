@@ -1,8 +1,19 @@
-import { Info, Keyboard } from "lucide-react"
+import { Info, User } from "lucide-react"
 import LastResult from "./LastResult"
 import SettingsButton from "./SettingsButton"
 import Link from 'next/link'
 import Image from 'next/image'
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+} from '@clerk/nextjs'
+import { ProfileButton } from "./UserButton"
+
+
+
+
 const Header = () => {
 
 
@@ -16,7 +27,10 @@ const Header = () => {
 
       <div className="flex items-center space-x-4">
         <LastResult />
-        <Link href={{query: { modalName: 'info'}}}> <Info/> </Link>
+        <Link href={{query: { modalName: 'info'}}}> 
+          <Info/>
+        </Link>
+        <ProfileButton/>
         <SettingsButton />
 
       </div>
