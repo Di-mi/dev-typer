@@ -2,7 +2,8 @@ import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { createUser } from '../../server/services/user'
-import PostHogClient from '../../../posthog'
+import PostHogClient from '../../posthog'
+import { after } from 'next/server'
 
 export async function POST(req: Request) {
   const SIGNING_SECRET = process.env.SIGNING_SECRET
@@ -60,15 +61,19 @@ export async function POST(req: Request) {
         email: evt.data.email_addresses[0].email_address
       })
 
-      posthogClient.capture( {
+      posthogClient.capture({
         event: 'user.created',
         distinctId: evt.data.id,
         properties: {
           email: evt.data.email_addresses[0].email_address,
         }
       })
-      await posthogClient.shutdown()
+      after(async () => {
+        await posthogClient.shutdown()
+      })
 
+
+      console.log('User created event sent to PostHog')
 
     
       break
