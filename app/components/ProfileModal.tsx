@@ -1,6 +1,6 @@
 "use client"
 
-import { useUser, SignInButton, SignUpButton } from '@clerk/nextjs';
+import { useUser, SignInButton, SignUpButton, SignOutButton } from '@clerk/nextjs';
 
 
 
@@ -43,6 +43,11 @@ function ProfileModal(props: { isOpen: boolean; toggleMenu?: () => void }) {
                   <span className="font-semibold">Avg. Accuracy:</span> 98%
                 </p>
               </div>
+
+              <button
+                className="w-full px-4 py-2 bg-green-500 text-black rounded-md shadow-retro hover:bg-green-400 active:shadow-inner-retro transition-all duration-200">
+                <SignOutButton />
+              </button>
               {/* <button className="w-full px-4 py-2 bg-green-500 text-black rounded-md shadow-retro hover:bg-green-400 active:shadow-inner-retro transition-all duration-200"> */}
               {/*   Edit Profile */}
               {/* </button> */}
