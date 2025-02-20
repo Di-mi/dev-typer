@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "next dev",
-    "build": "next build && db:push",
+    "build": "next build && pnpm db:push",
     "start": "next start",
     "db:push": "drizzle-kit push",
     "db:local": "turso dev",
