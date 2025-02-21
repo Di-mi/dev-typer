@@ -70,12 +70,8 @@ export async function POST(req: Request) {
       })
       after(async () => {
         await posthogClient.shutdown()
+        console.log('User created event sent to PostHog')
       })
-
-
-      console.log('User created event sent to PostHog')
-
-    
       break
   }
 
