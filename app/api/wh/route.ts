@@ -65,10 +65,12 @@ export async function POST(req: Request) {
         event: 'user.created',
         distinctId: evt.data.id,
         properties: {
+          fullName: evt.data.first_name + ' ' + evt.data.last_name,
           email: evt.data.email_addresses[0].email_address,
         }
       })
       after(async () => {
+        await posthogClient.flush()
         await posthogClient.shutdown()
         console.log('User created event sent to PostHog')
       })
