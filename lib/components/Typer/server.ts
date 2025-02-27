@@ -1,9 +1,10 @@
 "use server"
-import { SUPPORTED_LANGUAGES } from "../common/types";
+import { SUPPORTED_LANGUAGES_TYPE } from "lib/common/types";
+import { unstable_cache } from "next/cache";
 
 
 
-async function retrieveTextFromDb(language: SUPPORTED_LANGUAGES) {
+async function retrieveTextFromDb(language: SUPPORTED_LANGUAGES_TYPE) {
   const db = {
     JavaScript: 'https://7wdqxxyilxdytklh.public.blob.vercel-storage.com/data/typescript-KKDE6rGkQ28yKVtQ1DXHUxNa04AfZK.txt',
     Python: 'https://7wdqxxyilxdytklh.public.blob.vercel-storage.com/data/python-46Hk3ESFtISTrzb4GLDtX1xUcFHq5X.txt',
@@ -11,16 +12,12 @@ async function retrieveTextFromDb(language: SUPPORTED_LANGUAGES) {
   }
   const file = await fetch(db[language]).then(res => res.text());
   const textList = file.split('\n');
-  const textSample = []
-  for (let i = 0; i < 5; i++) {
-    textSample.push(textList[Math.round(Math.random() * (textList.length - 1))] );
-  }
-  return textSample.join('\n');;
+  return textList;
 }
 
 
 
 
-export async function getText(selectedLanguage: SUPPORTED_LANGUAGES = 'JavaScript') {
-  return await retrieveTextFromDb(selectedLanguage);
+export async function getAllTextByLanguage(selectedLanguage: SUPPORTED_LANGUAGES_TYPE = 'JavaScript'): Promise<string[]>{
+  return unstable_cache(async () => {return await retrieveTextFromDb(selectedLanguage)}, ['languages'], {revalidate: 1000})();
 }

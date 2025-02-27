@@ -1,15 +1,15 @@
 import { create } from 'zustand'
-import { SUPPORTED_LANGUAGES } from '../common/types'
+import { SUPPORTED_LANGUAGES_TYPE } from 'lib/common/types'
 import { persist } from 'zustand/middleware'
 
 
 type SidebarState = {
   isSidebarOpen: boolean
   toggleSidebar: () => void
-  setSelectedLanguage: (lang: SUPPORTED_LANGUAGES) => void
-  selectedLanguage: SUPPORTED_LANGUAGES
-}
-
+  setSelectedLanguage: (lang: SUPPORTED_LANGUAGES_TYPE) => void
+  selectedLanguage: SUPPORTED_LANGUAGES_TYPE
+} 
+ 
 type TYPING_RESULT = {
   wpm: number
   accuracy: number
@@ -24,7 +24,7 @@ const useSidebarStore = create<SidebarState>((set) => ({
   isSidebarOpen: false,
   selectedLanguage: 'Python',
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
-  setSelectedLanguage: (lang: SUPPORTED_LANGUAGES) => set({ selectedLanguage: lang })
+  setSelectedLanguage: (lang: SUPPORTED_LANGUAGES_TYPE) => set({ selectedLanguage: lang })
 }))
 
 const useHeaderStore = create<HeaderState>()(persist((set) => ({

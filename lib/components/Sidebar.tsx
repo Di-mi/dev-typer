@@ -3,10 +3,10 @@
 
 import { X, Code, PiIcon as Python, Cog } from 'lucide-react'
 
-import {useSidebarStore} from './hooks/hooks'
-import { SUPPORTED_LANGUAGES } from './common/types'
+import {useSidebarStore} from 'lib/hooks/hooks'
+import { SUPPORTED_LANGUAGES_TYPE } from 'lib/common/types'
 
-const LANGUAGES: {name: SUPPORTED_LANGUAGES, icon: any }[] = [
+const LANGUAGES: {name: SUPPORTED_LANGUAGES_TYPE, icon: any }[] = [
   { name: 'JavaScript', icon: Code },
   { name: 'Python', icon: Python },
   { name: 'Rust', icon: Cog }

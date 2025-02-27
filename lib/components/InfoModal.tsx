@@ -2,7 +2,7 @@
 
 import { X } from 'lucide-react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const INFO_TEXT = `Test your typing speed and accuracy but with most commonly used develeper commands and characters.`
 

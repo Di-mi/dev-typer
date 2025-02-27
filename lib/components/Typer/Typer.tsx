@@ -1,28 +1,48 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
-import { useHeaderStore, useSidebarStore } from '../hooks/hooks'
-import { getText } from './server'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { useHeaderStore, useSidebarStore } from 'lib/hooks/hooks'
+import { SUPPORTED_LANGUAGES_TYPE } from 'lib/common/types'
 
-export default function Typer() {
-  const [text, setText] = useState('')
+const sampleTextFromList = (listOfLines: string[], listOfRands: number[]) => {
+  const textSample = []
+  for (let i = 0; i < 5; i++) {
+    textSample.push(listOfLines[Math.round(listOfRands[i] * (listOfLines.length - 1))]);
+  }
+
+  return textSample.join('\n')
+}
+
+
+export default function Typer({ textByLanguage, randomSeed }: { textByLanguage: Record<SUPPORTED_LANGUAGES_TYPE, string[]>, randomSeed: number[] }) {
+
   const [typedText, setTypedText] = useState('')
   const [startTime, setStartTime] = useState(null)
-  const [wordCount, setWordCount] = useState(0)
   const [accuracy, setAccuracy] = useState(100)
   const [isActive, setIsActive] = useState(false)
+
+  const activeRef = useRef(isActive)
   const [timeElapsed, setTimeElapsed] = useState(0)
   const selectedLanguage = useSidebarStore((state) => state.selectedLanguage)
+  const [text, setText] = useState(sampleTextFromList(textByLanguage[selectedLanguage], randomSeed))
   const intervalRef = useRef(null)
   const containerRef = useRef(null)
-
-
+  const typedTextRef = useRef(typedText)
 
   const setLastResult = useHeaderStore((state) => state.setLastResult)
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [text])
+
+  useEffect(() => {
+    activeRef.current = isActive
+  }, [isActive])
 
   useEffect(() => {
     async function fetchText() {
-      const text = await getText(selectedLanguage)
-      setText(text)
+      const listOfLines = textByLanguage[selectedLanguage];
+
+      setText(sampleTextFromList(listOfLines, randomSeed))
       setTypedText('')
     }
     fetchText()
@@ -32,7 +52,6 @@ export default function Typer() {
     if (isActive && startTime) {
       intervalRef.current = setInterval(() => {
         const elapsedSec = Math.floor((Date.now() - startTime) / 1000)
-
         setTimeElapsed(elapsedSec)
       }, 1000)
     } else {
@@ -45,78 +64,86 @@ export default function Typer() {
     setIsActive(true)
     setStartTime(Date.now())
     setTypedText('')
-    setWordCount(0)
     setAccuracy(100)
     setTimeElapsed(0)
     if (containerRef.current) containerRef.current.focus()
   }
 
+  useEffect(() => {
+    typedTextRef.current = typedText
+    const accuracyCount = typedText.split('').reduce((acc, char, index) => {
+      return text[index] === char ? acc + 1 : acc
+    }, 0)
+    setAccuracy(Math.round((accuracyCount / typedText.length) * 100) || 100)
+
+    if (typedText.length === text.length) {
+      setIsActive(false)
+      setLastResult({
+        wpm: Math.round((
+          (typedText.length / 5) / timeElapsed) * 60),
+        accuracy
+      })
+    }
+  }, [typedText])
+
   const handleKeyDown = (e) => {
-    if (!isActive) return
+    if (!activeRef.current) {
+      handleStart()
+    }
     if (e.key === 'Backspace') {
-      setTypedText(prev => prev.slice(0, -1))
+      setTypedText(typedTextRef.current.slice(0, -1))
       return
     }
 
+    if (e.key === 'Shift') {
+      e.preventDefault()
+      return
+    }
     if (e.key === 'Enter') {
       e.preventDefault()
-      if (text[typedText.length] === '\n') {
-        setTypedText(prev => prev + '\n')
+      if (text[typedTextRef.current.length] === '\n') {
+        setTypedText(typedTextRef.current + '\n')
       }
       return
     }
 
     if (e.key.length === 1) {
-      const newTypedText = typedText + e.key
-      setTypedText(newTypedText)
-
-      const words = newTypedText.trim().split(/\s+/)
-      setWordCount(words.length)
-
-      const accuracyCount = newTypedText.split('').reduce((acc, char, index) => {
-        return text[index] === char ? acc + 1 : acc
-      }, 0)
-      setAccuracy(Math.round((accuracyCount / newTypedText.length) * 100) || 100)
-
-      if (newTypedText.length === text.length) {
-        setIsActive(false)
-        setLastResult({ wpm: Math.round((words.length / timeElapsed) * 60), accuracy })
-      }
+      setTypedText(typedTextRef.current + e.key)
     }
   }
 
-  const wpm = timeElapsed ? Math.round((wordCount / timeElapsed) * 60) : 0
+  const wpm = timeElapsed ? Math.round(
+    ((typedTextRef.current.length/5) / timeElapsed) * 60) : 0
 
   return (
-    <div className="flex-grow flex items-center justify-center p-4 my-auto">
+    <div className="flex-grow flex items-center justify-center p-4 my-auto" >
       {/* Scanline effect */}
       <div className="absolute inset-0 pointer-events-none bg-scanline z-10"></div>
 
-      <div className="relative z-20 w-full max-w-6xl space-y-6 backdrop-blur-sm bg-black/50 p-8 rounded-lg border-4 border-green-500 shadow-retro">
+      <div className="relative z-20 w-full max-w-6xl space-y-6 backdrop-blur-sm bg-black/50 p-8 rounded-lg border-4 border-green-500 shadow-retro" suppressHydrationWarning>
         <div
           ref={containerRef}
           className="p-4 border-2 border-green-500 rounded-md bg-black/50 shadow-inner-retro focus:outline-none whitespace-pre-wrap text-lg"
           tabIndex={0}
-          onKeyDown={handleKeyDown}
-          onFocus={handleStart}
         >
-        {
-          typedText.split('').map((char, index) => { 
-            let charToPrint = char
-            if (typedText[index] != text[index]) {
-              charToPrint = text[index]
-            }
-          return (
-            <span
-              key={index}
-              className={
-                  typedText[index] === text[index]
-                    ? 'text-green-500'
-                    : 'text-red-500'
-              }>
-              {charToPrint === '\n' ? '↵\n' : charToPrint}
-            </span>
-            )})
+          {
+            typedText.split('').map((char, index) => {
+              let charToPrint = char
+              if (typedText[index] != text[index]) {
+                charToPrint = text[index]
+              }
+              return (
+                <span
+                  key={index}
+                  className={
+                    typedText[index] === text[index]
+                      ? 'text-green-500'
+                      : 'text-red-500'
+                  } suppressHydrationWarning>
+                  {charToPrint === '\n' ? '↵\n' : charToPrint}
+                </span>
+              )
+            })
           }
           <span className="animate-pulse">⎹</span>
 
@@ -124,6 +151,7 @@ export default function Typer() {
             <span
               key={index}
               className={'opacity-50'}
+              suppressHydrationWarning
             >
               {char === '\n' ? '↵\n' : char}
             </span>
@@ -131,20 +159,16 @@ export default function Typer() {
         </div>
 
         <div className="flex justify-between items-center">
-          <button
-            onClick={handleStart}
-            disabled={isActive}
-            className="px-6 py-3 text-xl font-bold bg-green-500 text-black rounded-md shadow-retro hover:bg-green-400 active:shadow-inner-retro transition-all duration-200 disabled:opacity-50"
-          >
-            {isActive ? 'Typing...' : 'Start'}
-          </button>
+          <span>
+           {isActive ? 'Typing...' : ''}
+          </span>
           <div className="text-4xl font-bold animate-pulse">{timeElapsed}s</div>
         </div>
 
         <div className="space-y-2">
           <div className="flex justify-between text-lg">
             <span>Progress:</span>
-            <span>{text.length ? (Math.round(typedText.length / text.length) * 100 ) : 0 }%</span>
+            <span>{text.length ? (Math.round(typedText.length / text.length) * 100) : 0}%</span>
           </div>
           <div className="w-full bg-green-900 rounded-full h-6 shadow-inner-retro">
             <div

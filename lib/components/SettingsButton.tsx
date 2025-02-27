@@ -1,6 +1,6 @@
 "use client"
 import { Settings, X, Code, PiIcon as Python, Cog } from 'lucide-react'
-import { useSidebarStore } from './hooks/hooks'
+import { useSidebarStore } from 'lib/hooks/hooks'
 
 const SettingsButton = () => {
   const toggleSidebar = useSidebarStore((state) => state.toggleSidebar)

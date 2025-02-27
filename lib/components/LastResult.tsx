@@ -1,5 +1,5 @@
 "use client"
-import { useHeaderStore } from "./hooks/hooks"
+import { useHeaderStore } from "lib/hooks/hooks"
 
 
 const LastResult = () => {
