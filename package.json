@@ -1,9 +1,11 @@
 {
   "scripts": {
     "dev": "next dev",
-    "build": "next build && pnpm db:push",
+    "build": "next build && pnpm db:migrate",
     "start": "next start",
     "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
     "db:local": "turso dev",
     "db:studio": "drizzle-kit studio",
     "ngrok": "ngrok http --url=capable-topical-cobra.ngrok-free.app 3000"

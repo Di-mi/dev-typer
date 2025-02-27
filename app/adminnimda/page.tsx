@@ -3,9 +3,8 @@ import { auth } from '@clerk/nextjs/server'
 import { scoresTable } from '../server/db/schema'
 import { db } from '../server/db'
 import { eq } from 'drizzle-orm'
-import { getInternalUserId } from '../server/services/user'
-
-
+import { getInternalUser, getInternalUserId } from '../server/services/user'
+import { redirect } from 'next/navigation'
 const seedUser = async (clerkId: string) => {
   "use server"
 
@@ -42,7 +41,11 @@ const clearScores = async (clerkId: string) => {
 export default async function Admin() {
   const { userId, redirectToSignIn } = await auth()
 
-  if (!userId) return redirectToSignIn()
+  if (!userId) redirectToSignIn()
+
+  const internalUser = await getInternalUser(userId)
+
+  if (internalUser.admin !== true) return redirect('/')
 
   const seedCurrentUser = seedUser.bind(null, userId)
   const clearScoresForUser = clearScores.bind(null, userId)

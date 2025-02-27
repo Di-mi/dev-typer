@@ -13,6 +13,16 @@ export const getInternalUserId = async (clerkId: string): Promise<UserType['id']
   return userId
 
 }
+export const getInternalUser = async (clerkId: string): Promise<UserType> => {
+  const internallUser = await db
+    .select()   
+    .from(usersTable)
+    .where(eq(usersTable.clerkId, clerkId))
+    .limit(1)
+
+  return internallUser[0]
+
+}
 
 export const createUser = async (userInfo: Omit<UserType, 'id'>) => {
   const user = await db.
