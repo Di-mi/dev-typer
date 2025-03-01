@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useHeaderStore, useSidebarStore } from 'lib/hooks/hooks'
 import { SUPPORTED_LANGUAGES_TYPE } from 'lib/common/types'
+import { reloadText, scoreTyping } from './server'
+import { RotateCcw } from 'lucide-react'
 
 const sampleTextFromList = (listOfLines: string[], listOfRands: number[]) => {
   const textSample = []
@@ -13,7 +15,12 @@ const sampleTextFromList = (listOfLines: string[], listOfRands: number[]) => {
 }
 
 
-export default function Typer({ textByLanguage, randomSeed }: { textByLanguage: Record<SUPPORTED_LANGUAGES_TYPE, string[]>, randomSeed: number[] }) {
+interface TyperProps {
+  textByLanguage: Record<SUPPORTED_LANGUAGES_TYPE, string[]>,
+  randomSeed: number[],
+  clerkId?: string
+}
+export default function Typer({ textByLanguage, randomSeed, clerkId }:  TyperProps) {
 
   const [typedText, setTypedText] = useState('')
   const [startTime, setStartTime] = useState(null)
@@ -29,6 +36,8 @@ export default function Typer({ textByLanguage, randomSeed }: { textByLanguage: 
   const typedTextRef = useRef(typedText)
 
   const setLastResult = useHeaderStore((state) => state.setLastResult)
+
+
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
@@ -38,10 +47,16 @@ export default function Typer({ textByLanguage, randomSeed }: { textByLanguage: 
     activeRef.current = isActive
   }, [isActive])
 
+  const retry = () => {
+    setIsActive(false)
+    setTypedText('')
+    setTimeElapsed(0)
+    setAccuracy(100)
+  }
+
   useEffect(() => {
     async function fetchText() {
       const listOfLines = textByLanguage[selectedLanguage];
-
       setText(sampleTextFromList(listOfLines, randomSeed))
       setTypedText('')
     }
@@ -74,13 +89,16 @@ export default function Typer({ textByLanguage, randomSeed }: { textByLanguage: 
     const accuracyCount = typedText.split('').reduce((acc, char, index) => {
       return text[index] === char ? acc + 1 : acc
     }, 0)
-    setAccuracy(Math.round((accuracyCount / typedText.length) * 100) || 100)
+    setAccuracy(Math.round((accuracyCount / typedText.length) * 100))
 
     if (typedText.length === text.length) {
       setIsActive(false)
+      const wpm = Math.round(((typedText.length / 5) / timeElapsed) * 60)
+      if (clerkId) {
+        scoreTyping({ wpm, accuracy, clerkId })
+      }
       setLastResult({
-        wpm: Math.round((
-          (typedText.length / 5) / timeElapsed) * 60),
+        wpm,
         accuracy
       })
     }
@@ -113,7 +131,7 @@ export default function Typer({ textByLanguage, randomSeed }: { textByLanguage: 
   }
 
   const wpm = timeElapsed ? Math.round(
-    ((typedTextRef.current.length/5) / timeElapsed) * 60) : 0
+    ((typedTextRef.current.length / 5) / timeElapsed) * 60) : 0
 
   return (
     <div className="flex-grow flex items-center justify-center p-4 my-auto" >
@@ -160,7 +178,12 @@ export default function Typer({ textByLanguage, randomSeed }: { textByLanguage: 
 
         <div className="flex justify-between items-center">
           <span>
-           {isActive ? 'Typing...' : ''}
+            {isActive ? (
+              <button onClick={() => { retry(); }}>
+                <RotateCcw className="w-6 h-6 mr-2" />
+              </button>
+            )
+              : 'Start typing to begin!'}
           </span>
           <div className="text-4xl font-bold animate-pulse">{timeElapsed}s</div>
         </div>
@@ -168,7 +191,7 @@ export default function Typer({ textByLanguage, randomSeed }: { textByLanguage: 
         <div className="space-y-2">
           <div className="flex justify-between text-lg">
             <span>Progress:</span>
-            <span>{text.length ? (Math.round(typedText.length / text.length) * 100) : 0}%</span>
+            <span>{text.length ? (Math.max(Math.round(typedText.length / text.length), 100) * 100) : 0}%</span>
           </div>
           <div className="w-full bg-green-900 rounded-full h-6 shadow-inner-retro">
             <div

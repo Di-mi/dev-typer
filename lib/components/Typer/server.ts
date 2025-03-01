@@ -1,6 +1,8 @@
 "use server"
+import { recordScore } from "app/server/services/score";
+import { getInternalUserId } from "app/server/services/user";
 import { SUPPORTED_LANGUAGES_TYPE } from "lib/common/types";
-import { unstable_cache } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 
 
 
@@ -16,8 +18,26 @@ async function retrieveTextFromDb(language: SUPPORTED_LANGUAGES_TYPE) {
 }
 
 
+export async function scoreTyping(score: {wpm: number, accuracy: number, clerkId: string}) {
+  // Record score in db
+  console.log('Recording score:', score);
+
+  const userId = await getInternalUserId(score.clerkId); 
+
+
+  await recordScore({ wpm: score.wpm, accuracy: score.accuracy, userId });
+
+
+
+
+}
 
 
 export async function getAllTextByLanguage(selectedLanguage: SUPPORTED_LANGUAGES_TYPE = 'JavaScript'): Promise<string[]>{
   return unstable_cache(async () => {return await retrieveTextFromDb(selectedLanguage)}, ['languages'], {revalidate: 1000})();
+}
+
+export async function reloadText(){
+  revalidatePath('/');
+
 }
