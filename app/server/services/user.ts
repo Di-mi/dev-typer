@@ -24,7 +24,7 @@ export const getInternalUser = async (clerkId: string): Promise<UserType> => {
 
 }
 
-export const createUser = async (userInfo: Omit<UserType, 'id'>) => {
+export const createUser = async (userInfo: Omit<UserType, 'id'|'admin'>) => {
   const user = await db.
     insert(usersTable).
     values({...userInfo}).

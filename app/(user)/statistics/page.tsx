@@ -34,9 +34,9 @@ const getScores = async (clerkUserId: string, timeRange: RangeOptions) => {
   return formatedDateResults
 }
 
-export default async function StatisticsPage(serchParams: { timeRange: RangeOptions }) {
+export default async function StatisticsPage({searchParams} : {searchParams :Promise<{ [key: string]: string | string[] | undefined }>}) {
 
-  const timeRange = serchParams.timeRange ?? 'week'
+  const timeRange = (await searchParams).timeRange ?? 'week'
   const { userId, redirectToSignIn } = await auth()
 
   if (!userId) return redirectToSignIn()
@@ -94,7 +94,7 @@ export default async function StatisticsPage(serchParams: { timeRange: RangeOpti
             {/* Chart */}
             <div className="border-2 border-green-500 rounded-lg p-4 bg-black/50 shadow-retro">
               <InteractiveGraph
-                data={results} timeRange={timeRange} />
+                data={results} timeRange={timeRange as string} />
             </div>
           </div>
         </div>

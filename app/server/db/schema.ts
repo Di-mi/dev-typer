@@ -7,7 +7,7 @@ export const usersTable = sqliteTable("users_table", {
   clerkId: text().notNull().unique(),
   fullName: text().notNull(),
   email: text().notNull(),
-  admin: int({mode: 'boolean'}).notNull().default(0),
+  admin: int({mode: 'boolean'}).default(false),
 });
 
 
