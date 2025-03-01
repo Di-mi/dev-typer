@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dev": "next dev",
-    "build": "next build && pnpm db:migrate",
+    "build": "next build && pnpm db:push",
     "start": "next start",
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
