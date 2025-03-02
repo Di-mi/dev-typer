@@ -8,7 +8,7 @@ import { RotateCcw } from 'lucide-react'
 const sampleTextFromList = (listOfLines: string[], listOfRands: number[]) => {
   const textSample = []
   for (let i = 0; i < 5; i++) {
-    textSample.push(listOfLines[Math.round(listOfRands[i] * (listOfLines.length - 1))]);
+    textSample.push(listOfLines[Math.round(listOfRands[i] * (listOfLines.length - 1) % listOfLines.length)]);
   }
 
   return textSample.join('\n')
@@ -30,7 +30,9 @@ export default function Typer({ textByLanguage, randomSeed, clerkId }:  TyperPro
   const activeRef = useRef(isActive)
   const [timeElapsed, setTimeElapsed] = useState(0)
   const selectedLanguage = useSidebarStore((state) => state.selectedLanguage)
-  const [text, setText] = useState(sampleTextFromList(textByLanguage[selectedLanguage], randomSeed))
+  const [text, setText] = useState<string>(() => {
+    return sampleTextFromList(textByLanguage[selectedLanguage], randomSeed)
+  })
   const intervalRef = useRef(null)
   const containerRef = useRef(null)
   const typedTextRef = useRef(typedText)
@@ -50,6 +52,8 @@ export default function Typer({ textByLanguage, randomSeed, clerkId }:  TyperPro
   const retry = () => {
     setIsActive(false)
     setTypedText('')
+    setText(sampleTextFromList(textByLanguage[selectedLanguage], [...randomSeed.map(elem =>  (elem + Math.random()))]))
+
     setTimeElapsed(0)
     setAccuracy(100)
   }
@@ -89,7 +93,7 @@ export default function Typer({ textByLanguage, randomSeed, clerkId }:  TyperPro
     const accuracyCount = typedText.split('').reduce((acc, char, index) => {
       return text[index] === char ? acc + 1 : acc
     }, 0)
-    setAccuracy(Math.round((accuracyCount / typedText.length) * 100))
+    setAccuracy(Math.round((accuracyCount / typedText.length) * 100) || 0)
 
     if (typedText.length === text.length) {
       setIsActive(false)
