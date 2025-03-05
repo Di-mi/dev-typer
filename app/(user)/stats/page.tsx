@@ -21,7 +21,6 @@ const getScores = async (clerkUserId: string, timeRange: RangeOptionsType) => {
   "use server"
 
   const userID = await getInternalUserId(clerkUserId)
-  con
 
   const results = await db
     .select()
