@@ -1,8 +1,8 @@
 'use client'
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useHeaderStore, useSidebarStore } from 'lib/hooks/hooks'
 import { SUPPORTED_LANGUAGES_TYPE } from 'lib/common/types'
-import { reloadText, scoreTyping } from './server'
+import { scoreTyping } from './server'
 import { RotateCcw } from 'lucide-react'
 
 const sampleTextFromList = (listOfLines: string[], listOfRands: number[]) => {
@@ -10,6 +10,7 @@ const sampleTextFromList = (listOfLines: string[], listOfRands: number[]) => {
   for (let i = 0; i < 5; i++) {
     textSample.push(listOfLines[Math.round(listOfRands[i] * (listOfLines.length - 1) % listOfLines.length)]);
   }
+
 
   return textSample.join('\n')
 }
@@ -20,7 +21,8 @@ interface TyperProps {
   randomSeed: number[],
   clerkId?: string
 }
-export default function Typer({ textByLanguage, randomSeed, clerkId }:  TyperProps) {
+
+export default function Typer({ textByLanguage, randomSeed, clerkId }: TyperProps) {
 
   const [typedText, setTypedText] = useState('')
   const [startTime, setStartTime] = useState(null)
@@ -52,7 +54,7 @@ export default function Typer({ textByLanguage, randomSeed, clerkId }:  TyperPro
   const retry = () => {
     setIsActive(false)
     setTypedText('')
-    setText(sampleTextFromList(textByLanguage[selectedLanguage], [...randomSeed.map(elem =>  (elem + Math.random()))]))
+    setText(sampleTextFromList(textByLanguage[selectedLanguage], [...randomSeed.map(elem => (elem + Math.random()))]))
 
     setTimeElapsed(0)
     setAccuracy(100)

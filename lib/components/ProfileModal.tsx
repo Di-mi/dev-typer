@@ -1,6 +1,7 @@
 "use client"
 
 import { useUser, SignInButton, SignUpButton, SignOutButton } from '@clerk/nextjs';
+import Link from 'next/link';
 
 
 
@@ -9,7 +10,7 @@ function ProfileModal(props: { isOpen: boolean; toggleMenu?: () => void }) {
 
   const isOpen = props.isOpen
   const toggleMenu = props.toggleMenu
-  const {  isSignedIn, user } = useUser()
+  const { isSignedIn, user } = useUser()
   return isOpen && (
     <>
       <div className="fixed inset-0 bg-black opacity-30 z-40" onClick={() => toggleMenu()}></div>
@@ -44,13 +45,19 @@ function ProfileModal(props: { isOpen: boolean; toggleMenu?: () => void }) {
                 </p>
               </div>
 
-              <button
-                className="w-full px-4 py-2 bg-green-500 text-black rounded-md shadow-retro hover:bg-green-400 active:shadow-inner-retro transition-all duration-200">
-                <SignOutButton />
-              </button>
-              {/* <button className="w-full px-4 py-2 bg-green-500 text-black rounded-md shadow-retro hover:bg-green-400 active:shadow-inner-retro transition-all duration-200"> */}
-              {/*   Edit Profile */}
-              {/* </button> */}
+              <div className="flex flex-col">
+                <Link href="/stats" onClick={toggleMenu} className='my-4'>
+                  <button className="w-full px-4 py-2 bg-green-500 text-black rounded-md shadow-retro hover:bg-green-400 active:shadow-inner-retro transition-all duration-200">
+                    Stats
+                  </button>
+                </Link>
+
+                <button
+                  className="w-full px-4 py-2 bg-green-500 text-black rounded-md shadow-retro hover:bg-green-400 active:shadow-inner-retro transition-all duration-200">
+                  <SignOutButton />
+                </button>
+              </div>
+
             </>
           ) : (
             <>
