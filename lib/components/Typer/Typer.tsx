@@ -10,8 +10,6 @@ const sampleTextFromList = (listOfLines: string[], listOfRands: number[]) => {
   for (let i = 0; i < 5; i++) {
     textSample.push(listOfLines[Math.round(listOfRands[i] * (listOfLines.length - 1) % listOfLines.length)]);
   }
-
-
   return textSample.join('\n')
 }
 
@@ -28,8 +26,10 @@ export default function Typer({ textByLanguage, randomSeed, clerkId }: TyperProp
   const [startTime, setStartTime] = useState(null)
   const [accuracy, setAccuracy] = useState(100)
   const [isActive, setIsActive] = useState(false)
+  const [gameOver, setGameOver] = useState(false)
 
   const activeRef = useRef(isActive)
+  const gameOverRef = useRef(gameOver)
   const [timeElapsed, setTimeElapsed] = useState(0)
   const selectedLanguage = useSidebarStore((state) => state.selectedLanguage)
   const [text, setText] = useState<string>(() => {
@@ -48,11 +48,16 @@ export default function Typer({ textByLanguage, randomSeed, clerkId }: TyperProp
   }, [text])
 
   useEffect(() => {
+    gameOverRef.current = gameOver
+  }, [gameOver])
+
+  useEffect(() => {
     activeRef.current = isActive
   }, [isActive])
 
   const retry = () => {
     setIsActive(false)
+    setGameOver(false)
     setTypedText('')
     setText(sampleTextFromList(textByLanguage[selectedLanguage], [...randomSeed.map(elem => (elem + Math.random()))]))
 
@@ -95,10 +100,12 @@ export default function Typer({ textByLanguage, randomSeed, clerkId }: TyperProp
     const accuracyCount = typedText.split('').reduce((acc, char, index) => {
       return text[index] === char ? acc + 1 : acc
     }, 0)
+
     setAccuracy(Math.round((accuracyCount / typedText.length) * 100) || 0)
 
     if (typedText.length === text.length) {
       setIsActive(false)
+      setGameOver(true)
       const wpm = Math.round(((typedText.length / 5) / timeElapsed) * 60)
       if (clerkId) {
         scoreTyping({ wpm, accuracy, clerkId })
@@ -111,6 +118,9 @@ export default function Typer({ textByLanguage, randomSeed, clerkId }: TyperProp
   }, [typedText])
 
   const handleKeyDown = (e) => {
+    if (gameOverRef.current) {
+      return
+    }
     if (!activeRef.current) {
       handleStart()
     }
@@ -137,7 +147,9 @@ export default function Typer({ textByLanguage, randomSeed, clerkId }: TyperProp
   }
 
   const wpm = timeElapsed ? Math.round(
-    ((typedTextRef.current.length / 5) / timeElapsed) * 60) : 0
+    ((typedText.length / 5) / timeElapsed) * 60) : 0
+
+  const progress = text.length ? (Math.min(typedText.length / text.length, 1) * 100) : 0
 
   return (
     <div className="flex-grow flex items-center justify-center p-4 my-auto" >
@@ -184,7 +196,7 @@ export default function Typer({ textByLanguage, randomSeed, clerkId }: TyperProp
 
         <div className="flex justify-between items-center">
           <span>
-            {isActive ? (
+            {(isActive || gameOver) ? (
               <button onClick={() => { retry(); }}>
                 <RotateCcw className="w-6 h-6 mr-2" />
               </button>
@@ -197,12 +209,12 @@ export default function Typer({ textByLanguage, randomSeed, clerkId }: TyperProp
         <div className="space-y-2">
           <div className="flex justify-between text-lg">
             <span>Progress:</span>
-            <span>{text.length ? (Math.max(Math.round(typedText.length / text.length), 100) * 100) : 0}%</span>
+            <span>{Math.round(progress)}%</span>
           </div>
           <div className="w-full bg-green-900 rounded-full h-6 shadow-inner-retro">
             <div
               className="bg-green-500 h-6 rounded-full transition-all duration-300 shadow-retro"
-              style={{ width: `${(typedText.length / text.length) * 100}%` }}
+              style={{ width: `${progress}%` }}
             ></div>
           </div>
         </div>
