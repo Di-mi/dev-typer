@@ -20,6 +20,13 @@ interface TyperProps {
   clerkId?: string
 }
 
+const calulcateWpm = (typedText: string, timeElapsed: number, accuracy: number) => {
+  if (timeElapsed === 0) {
+    return 0
+  }
+  return Math.round(((typedText.length / 5) / timeElapsed) * 60 * accuracy / 100)
+}
+
 export default function Typer({ textByLanguage, randomSeed, clerkId }: TyperProps) {
 
   const [typedText, setTypedText] = useState('')
@@ -101,12 +108,13 @@ export default function Typer({ textByLanguage, randomSeed, clerkId }: TyperProp
       return text[index] === char ? acc + 1 : acc
     }, 0)
 
-    setAccuracy(Math.round((accuracyCount / typedText.length) * 100) || 0)
+    const accuracy = Math.round((accuracyCount / typedText.length) * 100) || 0
+    setAccuracy(accuracy)
 
     if (typedText.length === text.length) {
       setIsActive(false)
       setGameOver(true)
-      const wpm = Math.round(((typedText.length / 5) / timeElapsed) * 60)
+      const wpm = calulcateWpm(typedText, timeElapsed, accuracy)
       if (clerkId) {
         scoreTyping({ wpm, accuracy, clerkId })
       }
@@ -146,9 +154,7 @@ export default function Typer({ textByLanguage, randomSeed, clerkId }: TyperProp
     }
   }
 
-  const wpm = timeElapsed ? Math.round(
-    ((typedText.length / 5) / timeElapsed) * 60) : 0
-
+  const wpm = calulcateWpm(typedText, timeElapsed, accuracy)
   const progress = text.length ? (Math.min(typedText.length / text.length, 1) * 100) : 0
 
   return (
