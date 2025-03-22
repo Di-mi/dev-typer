@@ -52,23 +52,28 @@ function ProfileModal(props: { isOpen: boolean; toggleMenu?: () => void }) {
                   </button>
                 </Link>
 
-                <button
-                  className="w-full px-4 py-2 bg-green-500 text-black rounded-md shadow-retro hover:bg-green-400 active:shadow-inner-retro transition-all duration-200">
-                  <SignOutButton />
-                </button>
+                <SignOutButton>
+                  <button
+                    className="w-full px-4 py-2 bg-green-500 text-black rounded-md shadow-retro hover:bg-green-400 active:shadow-inner-retro transition-all duration-200">
+                    Sign Out
+                  </button>
+                </SignOutButton>
               </div>
-
             </>
           ) : (
             <>
               <p className="text-center">Sign in to track your progress and compete with other typists!</p>
-              <button
-                className="w-full px-4 py-2 bg-green-500 text-black rounded-md shadow-retro hover:bg-green-400 active:shadow-inner-retro transition-all duration-200">
-                <SignInButton />
-              </button>
-              <button className="w-full px-4 py-2 border-2 border-green-500 text-green-500 rounded-md shadow-retro hover:bg-green-500 hover:text-black active:shadow-inner-retro transition-all duration-200">
-                <SignUpButton />
-              </button>
+              <SignInButton>
+                <button
+                  className="w-full px-4 py-2 bg-green-500 text-black rounded-md shadow-retro hover:bg-green-400 active:shadow-inner-retro transition-all duration-200">
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton >
+                <button className="w-full px-4 py-2 border-2 border-green-500 text-green-500 rounded-md shadow-retro hover:bg-green-500 hover:text-black active:shadow-inner-retro transition-all duration-200">
+                  Sign Up
+                </button>
+              </SignUpButton>
             </>
           )}
         </div>

@@ -60,21 +60,7 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
   const bestWpm = Math.max(...results.map(r => r.wpm))
   const bestAccuracy = Math.max(...results.map(r => r.accuracy))
 
-  return !hasData ? (
-    <div className="text-center space-y-4">
-      <Keyboard size={64} className="mx-auto animate-pulse" />
-      <h2 className="text-2xl font-bold">No Typing Data Yet</h2>
-      <p className="text-green-500/70 max-w-md mx-auto">
-        Start your first typing test to begin tracking your progress. Your statistics and heatmap will appear here.
-      </p>
-      <Link
-        href="/"
-        className="inline-block mt-4 px-6 py-3 border-2 border-green-500 rounded-md hover:bg-green-500 hover:text-black transition-colors duration-200"
-      >
-        Start Typing Test
-      </Link>
-    </div>
-  ) : (
+  return (
     <div className="flex justify-center w-full">
       <div className="w-full xl:w-1/2 py-8 space-y-6">
         {/* Time Range Selector */}
@@ -92,22 +78,36 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
             </Link>
           ))}
         </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 gap-8">
-          <StatCard title="Average WPM" value={averageWpm} />
-          <StatCard title="Best WPM" value={bestWpm} />
-          <StatCard title="Average Accuracy" value={averageAccuracy} suffix="%" />
-          <StatCard title="Best Accuracy" value={bestAccuracy} suffix="%" />
-        </div>
-
-        {/* Chart */}
-        <div className="border-2 border-green-500 rounded-lg p-4 bg-black/50 shadow-retro">
-          <InteractiveGraph
-            data={results} timeRange={timeRange as string} />
-        </div>
+        {!hasData ? (
+          <div className="text-center space-y-4">
+            <Keyboard size={64} className="mx-auto animate-pulse" />
+            <h2 className="text-2xl font-bold">No Typing Data For Selected Time Range</h2>
+            <p className="text-green-500/70 max-w-md mx-auto">
+              Start your first typing test to begin tracking your progress. Your statistics and heatmap will appear here.
+            </p>
+            <Link
+              href="/"
+              className="inline-block mt-4 px-6 py-3 border-2 border-green-500 rounded-md hover:bg-green-500 hover:text-black transition-colors duration-200"
+            >
+              Start Typing Test
+            </Link>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-8">
+              <StatCard title="Average WPM" value={averageWpm} />
+              <StatCard title="Best WPM" value={bestWpm} />
+              <StatCard title="Average Accuracy" value={averageAccuracy} suffix="%" />
+              <StatCard title="Best Accuracy" value={bestAccuracy} suffix="%" />
+            </div>
+            <div className="border-2 border-green-500 rounded-lg p-4 bg-black/50 shadow-retro">
+              <InteractiveGraph
+                data={results} timeRange={timeRange as string} />
+            </div>
+          </>
+        )}
       </div>
-    </div>
+    </div >
   )
 
 
