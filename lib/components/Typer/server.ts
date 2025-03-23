@@ -18,26 +18,52 @@ async function retrieveTextFromDb(language: SUPPORTED_LANGUAGES_TYPE) {
 }
 
 
-export async function scoreTyping(score: {wpm: number, accuracy: number, clerkId: string}) {
+function calculateMistakes(assignmentText: string, typedText: string) {
+  const mistakesCounts = {};
+  const mistakesPercentage = {};
+
+  const assignmentTextArray = assignmentText.split('');
+  const typedTextArray = typedText.split('');
+
+  const charCounts = assignmentTextArray.reduce((acc, char) => {
+    acc[char] = (acc[char] || 0) + 1;
+    return acc;
+  }, {});
+
+  for (let i = 0; i < assignmentTextArray.length; i++) {
+    if (assignmentTextArray[i] !== typedTextArray[i]) {
+      mistakesCounts[assignmentTextArray[i]] = (mistakesCounts[assignmentTextArray[i]] || 0) + 1;
+      mistakesPercentage[assignmentTextArray[i]] = (mistakesCounts[assignmentTextArray[i]] / charCounts[assignmentTextArray[i]]) * 100;
+    }
+  }
+  return [mistakesCounts, mistakesPercentage];
+
+}
+
+export async function scoreTyping(score: { wpm: number, accuracy: number, assigmentText: string, typedText: string, clerkId: string }) {
   // Record score in db
   console.log('Recording score:', score);
+  const userId = await getInternalUserId(score.clerkId);
 
-  const userId = await getInternalUserId(score.clerkId); 
+  const [mistakesCounts, mistakesPercentage] = calculateMistakes(score.assigmentText, score.typedText);
 
-
-  await recordScore({ wpm: score.wpm, accuracy: score.accuracy, userId });
-
-
-
+  await recordScore({
+    wpm: score.wpm,
+    accuracy: score.accuracy, userId,
+    assigmentText: score.assigmentText,
+    typedText: score.typedText,
+    mistakesPercentage: JSON.stringify(mistakesPercentage),
+    mistakesCounts: JSON.stringify(mistakesCounts)
+  });
 
 }
 
 
-export async function getAllTextByLanguage(selectedLanguage: SUPPORTED_LANGUAGES_TYPE = 'JavaScript'): Promise<string[]>{
-  return unstable_cache(async () => {return await retrieveTextFromDb(selectedLanguage)}, ['languages'], {revalidate: 1000})();
+export async function getAllTextByLanguage(selectedLanguage: SUPPORTED_LANGUAGES_TYPE = 'JavaScript'): Promise<string[]> {
+  return unstable_cache(async () => { return await retrieveTextFromDb(selectedLanguage) }, ['languages'], { revalidate: 1000 })();
 }
 
-export async function reloadText(){
+export async function reloadText() {
   revalidatePath('/');
 
 }

@@ -4,7 +4,7 @@ import { getInternalUserId } from "../../server/services/user";
 import { scoresTable } from '../../server/db/schema'
 import { db } from "../../server/db";
 import Link from "next/link"
-import { InteractiveGraph, StatCard } from "./components";
+import { InteractiveGraph, KeyboardHeatmap, StatCard } from "./components";
 import { Keyboard } from 'lucide-react';
 
 
@@ -17,7 +17,9 @@ const TIME_RANGE_OPTIONS = {
 
 type RangeOptionsType = keyof typeof TIME_RANGE_OPTIONS
 
-const getScores = async (clerkUserId: string, timeRange: RangeOptionsType) => {
+type ScoreType = typeof scoresTable.$inferSelect;
+
+const getScores = async (clerkUserId: string, timeRange: RangeOptionsType): Promise<ScoreType[]> => {
   "use server"
 
   const userID = await getInternalUserId(clerkUserId)
@@ -60,8 +62,28 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
   const bestWpm = Math.max(...results.map(r => r.wpm))
   const bestAccuracy = Math.max(...results.map(r => r.accuracy))
 
+  const mergedMistakesCounts = results.reduce((acc, r) => {
+    if (!r.mistakesCounts) return acc
+    const mistakesCounts = JSON.parse(r.mistakesCounts as string)
+    Object.keys(mistakesCounts).forEach(key => {
+      acc[key] = (acc[key] || 0) + mistakesCounts[key]
+    })
+    return acc
+  }, {});
+
+  const mergedMistakesPercentages = results.reduce((acc, r) => {
+    if (!r.mistakesPercentage) return acc
+    const mistakesPercentages = JSON.parse(r.mistakesPercentage as string)
+    Object.keys(mistakesPercentages).forEach(key => {
+      acc[key] = (acc[key] || 0) + mistakesPercentages[key]
+    })
+    return acc
+  }, {});
+
+  const mostCommonMistake = Object.keys(mergedMistakesCounts).filter(key => key !== ' ').reduce((a, b) => { console.log('a, b', a, b, mergedMistakesCounts[a], mergedMistakesCounts[b]); return mergedMistakesCounts[a] > mergedMistakesCounts[b] ? a : b })
+
   return (
-    <div className="flex justify-center w-full">
+    <div className="flex justify-center w-full px-4">
       <div className="w-full xl:w-1/2 py-8 space-y-6">
         {/* Time Range Selector */}
         <div className="flex justify-center space-x-4">
@@ -94,16 +116,22 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
               <StatCard title="Average WPM" value={averageWpm} />
               <StatCard title="Best WPM" value={bestWpm} />
               <StatCard title="Average Accuracy" value={averageAccuracy} suffix="%" />
               <StatCard title="Best Accuracy" value={bestAccuracy} suffix="%" />
+              <StatCard title="Total Tests" value={results.length} />
+              <StatCard
+                title="Most Common Mistake"
+                value={mostCommonMistake}
+              />
             </div>
             <div className="border-2 border-green-500 rounded-lg p-4 bg-black/50 shadow-retro">
               <InteractiveGraph
                 data={results} timeRange={timeRange as string} />
             </div>
+            <KeyboardHeatmap mistakesCounts={mergedMistakesCounts} mistakesPercentages={mergedMistakesPercentages} />
           </>
         )}
       </div>

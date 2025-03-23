@@ -1,5 +1,4 @@
 import { sql } from "drizzle-orm";
-import { boolean, timestamp } from "drizzle-orm/mysql-core";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const usersTable = sqliteTable("users_table", {
@@ -7,7 +6,7 @@ export const usersTable = sqliteTable("users_table", {
   clerkId: text().notNull().unique(),
   fullName: text().notNull(),
   email: text().notNull(),
-  admin: int({mode: 'boolean'}).default(false),
+  admin: int({ mode: 'boolean' }).default(false),
 });
 
 
@@ -19,6 +18,10 @@ export const scoresTable = sqliteTable("scores_table", {
   timestamp: int('timestamp1', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
+  assigmentText: text(),
+  typedText: text(),
+  mistakesCounts: text({ mode: 'json' }),
+  mistakesPercentage: text({ mode: 'json' }),
 });
 
 
