@@ -81,8 +81,11 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
   }, {});
 
 
-
-  const mostCommonMistake = Object.keys(mergedMistakesCounts).length > 0 ? Object.keys(mergedMistakesCounts).filter(key => key !== ' ').reduce((a, b) => mergedMistakesCounts[a] > mergedMistakesCounts[b] ? a : b) : 'N/A'
+  const mostCommonMistake = Object.keys(mergedMistakesPercentages).length > 0
+    ? Object.keys(mergedMistakesPercentages)
+      .filter(key => key !== ' ')
+      .reduce((a, b) => mergedMistakesPercentages[a] > mergedMistakesPercentages[b] ? a : b)
+    : 'N/A'
 
   return (
     <div className="flex justify-center w-full px-4">
