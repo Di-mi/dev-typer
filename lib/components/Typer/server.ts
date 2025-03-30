@@ -40,9 +40,8 @@ function calculateMistakes(assignmentText: string, typedText: string) {
 
 }
 
-export async function scoreTyping(score: { wpm: number, accuracy: number, assigmentText: string, typedText: string, clerkId: string }) {
+export async function scoreTyping(score: { wpm: number, accuracy: number, assigmentText: string, typedText: string, clerkId: string, scoreLanguage: SUPPORTED_LANGUAGES_TYPE }) {
   // Record score in db
-  console.log('Recording score:', score);
   const userId = await getInternalUserId(score.clerkId);
 
   const [mistakesCounts, mistakesPercentage] = calculateMistakes(score.assigmentText, score.typedText);
@@ -53,7 +52,8 @@ export async function scoreTyping(score: { wpm: number, accuracy: number, assigm
     assigmentText: score.assigmentText,
     typedText: score.typedText,
     mistakesPercentage: JSON.stringify(mistakesPercentage),
-    mistakesCounts: JSON.stringify(mistakesCounts)
+    mistakesCounts: JSON.stringify(mistakesCounts),
+    language: score.scoreLanguage
   });
 
 }

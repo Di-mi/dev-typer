@@ -62,6 +62,7 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
   const bestWpm = Math.max(...results.map(r => r.wpm))
   const bestAccuracy = Math.max(...results.map(r => r.accuracy))
 
+
   const mergedMistakesCounts = results.reduce((acc, r) => {
     if (!r.mistakesCounts) return acc
     const mistakesCounts = JSON.parse(r.mistakesCounts as string)
@@ -83,9 +84,9 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
 
   const mostCommonMistake = Object.keys(mergedMistakesPercentages).length > 0
     ? Object.keys(mergedMistakesPercentages)
-      .filter(key => key !== ' ')
       .reduce((a, b) => mergedMistakesPercentages[a] > mergedMistakesPercentages[b] ? a : b)
     : 'N/A'
+
 
   return (
     <div className="flex justify-center w-full px-4">
@@ -136,7 +137,7 @@ export default async function StatisticsPage({ searchParams }: { searchParams: P
               <InteractiveGraph
                 data={results} timeRange={timeRange as string} />
             </div>
-            <KeyboardHeatmap mistakesCounts={mergedMistakesCounts} mistakesPercentages={mergedMistakesPercentages} />
+            <KeyboardHeatmap mistakes={mergedMistakesCounts} mistakesPercentage={mergedMistakesPercentages} />
           </>
         )}
       </div>

@@ -11,7 +11,8 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart"
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { CornerDownLeft } from "lucide-react";
 
 
 
@@ -130,44 +131,134 @@ export function InteractiveGraph({ data }: { data: any[]; timeRange: string }) {
 
 
 export function KeyboardHeatmap({
-  mistakesCounts,
-  mistakesPercentages,
+  mistakes,
+  mistakesPercentage,
 }: {
-  mistakesCounts: Record<string, number>
-  mistakesPercentages: Record<string, number>
+  mistakes: Record<string, number>
+  mistakesPercentage: Record<string, number>
 }) {
   const layout = [
-    ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
-    ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
-    ["z", "x", "c", "v", "b", "n", "m"],
+    ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+"],
+    ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\"],
+    ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "enter"],
+    ["z", "x", "c", "v", "b", "n", "m", ",", ".", "/"],
   ]
+
+  // Map for translating shift symbols back to their base keys for data lookup
+  const shiftKeyMap: Record<string, string> = {
+    "!": "1",
+    "@": "2",
+    "#": "3",
+    $: "4",
+    "%": "5",
+    "^": "6",
+    "&": "7",
+    "*": "8",
+    "(": "9",
+    ")": "0",
+    _: "-",
+    "+": "=",
+  }
+
+
+  const getMistakeRate = (key: string) => {
+    // For shift symbols, look up the base key
+    const dataKey = shiftKeyMap[key] || key
+    return mistakesPercentage[dataKey] || 0
+  }
 
   const getHeatColor = (rate: number) => {
     const intensity = Math.min(rate * 2, 100) / 100
     return `rgba(255, ${Math.round(255 * (1 - intensity))}, 0, ${0.3 + intensity * 0.7})`
   }
 
-  const [tooltipContent, setTooltipContent] = useState<{ content: string; x: number; y: number } | null>(null)
+  const [tooltipContent, setTooltipContent] = useState<{ key: string; content: string, x: number, y: number } | null>(null)
+  const tooltipRef = useRef<{ key: string; content: string, x: number, y: number } | null>(null)
+
+  const getKeyDisplay = (key: string) => {
+    if (key === "enter") return <CornerDownLeft size={20} />
+    if (key === "\\") return "\\"
+    return key
+  }
+
+  useEffect(() => {
+    tooltipRef.current = tooltipContent
+  }, [tooltipContent])
+
+  const getKeyWidth = (key: string) => {
+    if (key === "enter") return "w-24 sm:w-28"
+    return "w-12 h-12 sm:w-14 sm:h-14"
+  }
+
+  const getTooltipText = (key: string) => {
+    // For shift symbols, show both the symbol and the base key
+    if (shiftKeyMap[key]) {
+      return `${key} (SHIFT+${shiftKeyMap[key]})`
+    }
+    return key === "enter" ? "ENTER" : key.toUpperCase()
+  }
 
   return (
-    <div className="relative p-4 border-2 border-green-500 rounded-md bg-black/50 shadow-retro">
-      <div className="text-sm mb-4 font-bold">Mistake Heatmap</div>
-      <div className="flex flex-col items-center gap-2">
-        {layout.map((row, i) => (
-          <div key={i} className="flex gap-1" style={{ marginLeft: i * 12 }}>
+    <div className="relative p-6 border-2 border-green-500 rounded-md bg-black/50 shadow-retro">
+      <div className="text-sm mb-6 font-bold">Mistake Heatmap</div>
+      <div className="flex flex-col items-center gap-4">
+        {/* Top row with extra spacing */}
+        <div className="flex gap-1 mb-4">
+          {layout[0].map((key) => {
+            const dataKey = shiftKeyMap[key] || key
+            const mistakeRate = getMistakeRate(key)
+            const totalHits = Math.round(mistakes[dataKey] * (100 / mistakesPercentage[dataKey]) || 0)
+            const totalMistakes = mistakes[dataKey] || 0
+            return (
+              <div
+                key={key}
+                className={`${getKeyWidth(key)} border-2 border-green-500 rounded flex items-center justify-center transition-all hover:border-green-400 relative text-sm sm:text-base`}
+                style={{ backgroundColor: getHeatColor(mistakeRate) }}
+                onMouseEnter={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  setTooltipContent({
+                    key,
+                    content: `${getTooltipText(key)}
+Mistake Rate: ${mistakeRate.toFixed(1)}%
+Total Strokes: ${totalHits}
+Total Mistakes: ${totalMistakes}`,
+                    x: rect.left + window.scrollX,
+                    y: rect.top + window.scrollY,
+                  })
+                }}
+                onMouseLeave={() => {
+                  // Add a small delay to prevent flickering
+                  setTimeout(() => {
+                    if (tooltipContent?.key === key) {
+                      setTooltipContent(null)
+                    }
+                  }, 100)
+                }}
+              >
+                {getKeyDisplay(key)}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Main keyboard rows */}
+        {layout.slice(1).map((row, i) => (
+          <div key={i} className="flex gap-1" style={{ marginLeft: i === 0 ? 12 : i === 1 ? 16 : 24 }}>
             {row.map((key) => {
-              const mistakeRate = mistakesPercentages[key] || 0
-              const totalHits = Math.round(mistakesCounts[key] * (100 / mistakesPercentages[key])) || 0
-              const totalMistakes = mistakesCounts[key] || 0
+              const dataKey = shiftKeyMap[key] || key
+              const mistakeRate = getMistakeRate(key)
+              const totalHits = Math.round(mistakes[dataKey] * (100 / mistakesPercentage[dataKey]) || 0)
+              const totalMistakes = mistakes[dataKey] || 0
               return (
                 <div
                   key={key}
-                  className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-green-500 rounded flex items-center justify-center transition-all hover:border-green-400 relative"
+                  className={`${getKeyWidth(key)} border-2 border-green-500 rounded flex items-center justify-center transition-all hover:border-green-400 relative text-sm sm:text-base`}
                   style={{ backgroundColor: getHeatColor(mistakeRate) }}
                   onMouseEnter={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect()
                     setTooltipContent({
-                      content: `${key.toUpperCase()}
+                      key,
+                      content: `${getTooltipText(key)}
 Mistake Rate: ${mistakeRate.toFixed(1)}%
 Total Strokes: ${totalHits}
 Total Mistakes: ${totalMistakes}`,
@@ -175,21 +266,61 @@ Total Mistakes: ${totalMistakes}`,
                       y: rect.top + window.scrollY,
                     })
                   }}
-                  onMouseLeave={() => setTooltipContent(null)}
+                  onMouseLeave={() => {
+                    // Add a small delay to prevent flickering
+                    setTimeout(() => {
+                      if (tooltipRef.current?.key === key) {
+                        setTooltipContent(null)
+                      }
+                    }, 100)
+                  }}
                 >
-                  {key.toUpperCase()}
+                  {getKeyDisplay(key)}
                 </div>
               )
             })}
           </div>
         ))}
+
+        {/* Space bar row with extra spacing */}
+        <div className="flex gap-1 mt-4">
+          <div
+            className="w-80 sm:w-[28rem] h-12 sm:h-14 border-2 border-green-500 rounded flex items-center justify-center transition-all hover:border-green-400 relative text-sm sm:text-base"
+            style={{ backgroundColor: getHeatColor(getMistakeRate("space")) }}
+            onMouseEnter={(e) => {
+              const mistakeRate = getMistakeRate(" ")
+              const totalHits = Math.round(mistakes[" "] * (100 / mistakesPercentage[" "]) || 0)
+              const totalMistakes = mistakes[" "] || 0
+              const rect = e.currentTarget.getBoundingClientRect()
+              setTooltipContent({
+                key: "space",
+                content: `SPACE
+Mistake Rate: ${mistakeRate.toFixed(1)}%
+Total Strokes: ${totalHits}
+Total Mistakes: ${totalMistakes}`,
+                x: rect.left + window.scrollX,
+                y: rect.top + window.scrollY,
+              })
+
+            }}
+            onMouseLeave={() => {
+              setTimeout(() => {
+                if (tooltipRef.current?.key === "space") {
+                  setTooltipContent(null)
+                }
+              }, 100)
+            }}
+          >
+            SPACE
+          </div>
+        </div>
       </div>
       {tooltipContent && (
         <div
-          className="fixed z-50 px-3 py-2 text-sm bg-black border-2 border-green-500 rounded-md shadow-retro whitespace-pre"
+          className="fixed z-50 px-3 py-2 text-sm bg-black border-2 border-green-500 rounded-md shadow-retro whitespace-pre pointer-events-none"
           style={{
-            left: `${tooltipContent.x}px`,
-            top: `${tooltipContent.y - 80}px`,
+            left: `${tooltipContent.x ?? 0}px`,
+            top: `${(tooltipContent.y) - 100}px`,
             pointerEvents: "none",
           }}
         >
@@ -199,7 +330,6 @@ Total Mistakes: ${totalMistakes}`,
     </div>
   )
 }
-
 export const StatCard = ({ title, value, suffix = '' }: { title: string, value: string | number, suffix?: string }) => {
   return (
     <div className="p-2 border-2 border-green-500 rounded-md bg-black/50 shadow-retro" >

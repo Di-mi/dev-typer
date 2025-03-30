@@ -116,7 +116,7 @@ export default function Typer({ textByLanguage, randomSeed, clerkId }: TyperProp
       setGameOver(true)
       const wpm = calulcateWpm(typedText, timeElapsed, accuracy)
       if (clerkId) {
-        scoreTyping({ wpm, accuracy, clerkId, assigmentText: text, typedText })
+        scoreTyping({ wpm, accuracy, clerkId, assigmentText: text, typedText, scoreLanguage: selectedLanguage })
       }
       setLastResult({
         wpm,

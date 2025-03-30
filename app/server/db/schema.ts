@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { SUPPORTED_LANGUAGES_TYPE } from "lib/common/types";
 
 export const usersTable = sqliteTable("users_table", {
   id: int().primaryKey({ autoIncrement: true }),
@@ -20,6 +21,7 @@ export const scoresTable = sqliteTable("scores_table", {
     .default(sql`(unixepoch())`),
   assigmentText: text(),
   typedText: text(),
+  language: text().$type<SUPPORTED_LANGUAGES_TYPE>(),
   mistakesCounts: text({ mode: 'json' }),
   mistakesPercentage: text({ mode: 'json' }),
 });
